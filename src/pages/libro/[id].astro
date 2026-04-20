@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const books = await getCollection("books");
+
+  return books.map((book) => ({
+    params: { id: book.id },
+    props: { book },
+  }));
+}
+
+const { book } = Astro.props;
+const { data, id } = book;
+const { title, author, img, readtime, description, buy } = data;
+
+const { Content } = await render(book);
+---
+
+<Layout title={`${title} - Dev Books`}>
+  <div class="flex gap-12 items-center gap-4">
+    <aside class="flex flex-col">
+      <a href="/" class="hover:underline opacity-70">← Volver</a>
+      <img
+        transition:name={`img-${id}`}
+        class="rounded w-72 h-auto"
+        src={`/${img}`}
+        alt={title}
+      />
+    </aside>
+    <main class="max-w-3xl">
+      <h1 transition:name={`title-${id}`} class="text-4xl font-bold mb-4">
+        {title}
+      </h1>
+      <div class="prose prose-slate max-w-none">
+        <Content />
+      </div>
+    </main>
+  </div>
+</Layout>
